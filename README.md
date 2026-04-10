@@ -73,7 +73,7 @@ Uygulanan işlemler:
 Test veri setine herhangi bir veri artırma uygulanmamıştır.  
 Bu sayede model, gerçek ve değiştirilmemiş veriler üzerinde değerlendirilmiştir.
 
----
+
 
 ### 🔹 Data Generator Yapısı
 
@@ -83,7 +83,7 @@ Keras `ImageDataGenerator` yapısı kullanılarak görseller klasörlerden okunm
 - Veriler batch (grup) halinde modele verilmiştir (`batch_size=32`)
 - Çok sınıflı sınıflandırma için `categorical` format kullanılmıştır
 
----
+
 
 ### 🔹 Eğitim ve Test Veri Akışı
 
@@ -99,7 +99,7 @@ Keras `ImageDataGenerator` yapısı kullanılarak görseller klasörlerden okunm
     - ROC analizleri  
     doğru şekilde hesaplanır
 
----
+
 
 ### 🔹 Sınıf Bilgileri
 
@@ -113,46 +113,123 @@ Bu yapı sayesinde model, veri setindeki tüm sınıfları otomatik olarak algı
 
 ---
 
-##  Eğitim Süreci
+## 🧠 Model Eğitimi: Transfer Learning ve Fine-Tuning Süreci
 
-### 1. Transfer Learning
-- Önceden eğitilmiş model yüklenir
-- Tüm katmanlar dondurulur (freeze)
-- Sadece üst katmanlar eğitilir
+Bu projede birden fazla CNN modeli üzerinde aynı eğitim süreci uygulanarak performans karşılaştırması yapılmıştır.
 
-### 2. Fine-Tuning
-- Son 30 katman açılır
-- Düşük learning rate ile yeniden eğitilir
 
----
 
-## 📊 Değerlendirme Metrikleri
+### 🔹 Early Stopping
 
-Her model aşağıdaki metriklere göre değerlendirilmiştir:
+Modelin overfitting (aşırı öğrenme) yapmasını önlemek için Early Stopping kullanılmıştır:
 
-- Accuracy
-- Precision
-- Recall
-- F1-Score
-- Specificity
-- AUC (ROC)
+- İzlenen metrik: `val_loss`
+- Sabır (patience): 3 epoch
+- En iyi ağırlıklar otomatik geri yüklenir (`restore_best_weights=True`)
 
----
 
-## Görselleştirmeler
+
+
+##  1. Transfer Learning (Özellik Çıkarma Aşaması)
 
 Her model için:
 
-- Confusion Matrix
-- ROC Curve (çok sınıflı)
-- Classification Report
+- ImageNet ağırlıkları yüklenmiştir
+- Önceden eğitilmiş katmanlar dondurulmuştur (freeze)
+- Bu sayede:
+  - Modelin öğrendiği genel görsel özellikler korunmuştur
+  - Eğitim sadece üst katmanlarda yapılmıştır
+
+
+
+### 🔹 Model Üst Katmanı
+
+Her modele şu yapı eklenmiştir:
+
+- Global Average Pooling
+- Fully Connected (Dense) katman (128 nöron, ReLU)
+- Dropout (0.5) → overfitting önlemek için
+- Çıkış katmanı (Softmax → sınıf sayısı kadar)
+
+
+
+## ⚙️ Model Derleme
+
+- Optimizer: Adam
+- Loss function: Categorical Crossentropy
+- Metric: Accuracy
+
+
+
+##  2. Fine-Tuning (İnce Ayar)
+
+Transfer learning sonrası model daha iyi uyum sağlasın diye:
+
+- Son 30 katman yeniden eğitilebilir hale getirilmiştir
+- Daha düşük öğrenme oranı kullanılmıştır (`learning rate = 1e-5`)
+- Model veri setine özel olarak yeniden optimize edilmiştir
 
 ---
 
-## Sonuç
+## 📊 Model Değerlendirme
 
-Tüm modeller karşılaştırılarak en yüksek doğruluğa (Accuracy) sahip model belirlenmiştir.
+Her model için aşağıdaki analizler yapılmıştır:
+
+### 🔹 Tahminler
+- Test verisi üzerinde sınıf tahminleri yapılmıştır
+- Olasılık değerleri (`predict_proba`) hesaplanmıştır
+
+
+
+### 🔹 Confusion Matrix
+- Gerçek ve tahmin edilen sınıflar karşılaştırılmıştır
+- Sınıf bazlı performans detaylı incelenmiştir
+  
+
+
+### 🔹 ROC Curve & AUC
+- Çok sınıflı ROC eğrileri çizilmiştir
+- Her sınıf için AUC değeri hesaplanmıştır
+
+
+
+### 🔹 Classification Report
+- Precision
+- Recall
+- F1-score
+
+
+
+
+
+### 🔹 Specificity (Özgüllük)
+
+Her sınıf için ayrı ayrı hesaplanmıştır:
+
+- True Negative oranı analiz edilmiştir
+- Modelin yanlış pozitifleri ne kadar iyi ayırt ettiği ölçülmüştür
 
 ---
 
+## 📈 Sonuçların Karşılaştırılması
+
+Her model için şu metrikler kaydedilmiştir:
+
+- Accuracy
+- Precision (macro average)
+- Recall (macro average)
+- F1-score (macro average)
+- Specificity (ortalama)
+- AUC (macro average)
+
+Bu metrikler karşılaştırılarak en iyi performans gösteren model belirlenmiştir.
+
+---
+
+## 🏆 Amaç
+
+Bu sürecin amacı:
+- Farklı CNN mimarilerini karşılaştırmak
+- Transfer learning ve fine-tuning etkisini gözlemlemek
+- En iyi performans veren modeli belirlemektir
 

@@ -113,7 +113,7 @@ Bu yapı sayesinde model, veri setindeki tüm sınıfları otomatik olarak algı
 
 ---
 
-## 🧠 Model Eğitimi: Transfer Learning ve Fine-Tuning Süreci
+##  Model Eğitimi: Transfer Learning ve Fine-Tuning Süreci
 
 Bu projede birden fazla CNN modeli üzerinde aynı eğitim süreci uygulanarak performans karşılaştırması yapılmıştır.
 
@@ -226,7 +226,7 @@ Bu metrikler karşılaştırılarak en iyi performans gösteren model belirlenmi
 
 ---
 
-## 🏆 Amaç
+##  Amaç
 
 Bu sürecin amacı:
 - Farklı CNN mimarilerini karşılaştırmak
